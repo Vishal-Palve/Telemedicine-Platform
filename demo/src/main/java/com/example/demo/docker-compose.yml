@@ -1,0 +1,56 @@
+# This file orchestrates the running of our application and database containers.
+# It defines the services, networks, and volumes needed for the application to run.
+
+version: '3.8'
+
+services:
+  # The PostgreSQL Database Service
+  # This service uses the official postgres image from Docker Hub.
+  postgres-db:
+    image: postgres:14.1
+    container_name: telemedicine-postgres
+    environment:
+      # These environment variables are used by the postgres image upon first run
+      # to set up the database, user, and password.
+      POSTGRES_DB: telemedicine_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Vishal@12#34
+    ports:
+      # Maps the container's internal port 5432 to the host machine's port 5432.
+      # This allows you to connect to the database from your local machine if needed.
+      - "5432:5432"
+    volumes:
+      # This creates a named volume to persist the database data on the host machine.
+      # This ensures your data is not lost when you stop or remove the container.
+      - postgres-data:/var/lib/postgresql/data
+
+  # The Spring Boot Application Service
+  # This service builds and runs our Telemedicine application.
+  telemedicine-app:
+    # Tells Docker Compose to build the image from the Dockerfile in the current directory.
+    build: .
+    container_name: telemedicine-app
+    depends_on:
+      # This is a crucial instruction. It ensures that the 'postgres-db' container
+      # is started and healthy before this application container starts.
+      - postgres-db
+    ports:
+      # Maps the container's port 8080 (where Spring Boot runs) to the host's port 8080.
+      - "8080:8080"
+    environment:
+      # These environment variables override the settings in your application.properties file.
+      # This is the modern way to configure a Spring Boot app in Docker.
+      # We use the service name 'postgres-db' as the hostname. Docker's internal DNS
+      # will automatically resolve this to the database container's IP address.
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/telemedicine_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=Vishal@12#34
+      # This tells Hibernate to update the schema when the application starts.
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      # You can also pass your JWT secret keys here for better security in production.
+      # - TELEMEDICINE_APP_JWTSECRET=your_super_secret_key_from_a_vault
+      # - TELEMEDICINE_APP_JWTEXPIRATIONMS=86400000
+
+# Defines the named volume that the 'postgres-db' service uses for data persistence.
+volumes:
+  postgres-data:
