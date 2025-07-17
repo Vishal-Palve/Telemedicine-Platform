@@ -55,13 +55,10 @@ public class WebSecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**").permitAll()
-                                // === ADD THESE LINES TO ALLOW SWAGGER UI ACCESS ===
-                                .requestMatchers("/v3/api-docs/**").permitAll()
-                                .requestMatchers("/swagger-ui/**").permitAll()
-                                .requestMatchers("/swagger-ui.html").permitAll()
-                                // =================================================
-                                .anyRequest().authenticated()
+                                // === TEMPORARY CHANGE FOR DEBUGGING ===
+                                // This will permit all requests to see if it fixes the Swagger error.
+                                auth.anyRequest().permitAll()
+                        // ======================================
                 );
 
         http.authenticationProvider(authenticationProvider());
