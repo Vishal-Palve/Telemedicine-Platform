@@ -11,6 +11,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,7 +27,6 @@ public class WebSecurityConfig {
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
 
-    // A whitelist for all public Swagger/OpenAPI documentation paths.
     private static final String[] SWAGGER_WHITE_LIST = {
             "/v3/api-docs/**",
             "/swagger-ui/**",
@@ -62,13 +62,22 @@ public class WebSecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**").permitAll() // Allow auth endpoints
-                                .requestMatchers(SWAGGER_WHITE_LIST).permitAll() // Allow documentation
-                                .anyRequest().authenticated() // Secure all other endpoints
+                        auth.requestMatchers("/api/auth/**").permitAll()
+                                .anyRequest().authenticated()
                 );
 
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    /**
+     * This bean configures Spring Security to completely ignore the documentation paths.
+     * This is a stronger approach than .permitAll() and is the recommended way to
+     * handle static resources and documentation that should not be secured at all.
+     */
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers(SWAGGER_WHITE_LIST);
     }
 }
