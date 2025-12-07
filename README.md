@@ -66,6 +66,6 @@ To run this project locally, you need to have Docker and Docker Compose installe
 
 ## Contact
 
-Vishal Palve - [your.email@example.com](mailto:vishalxpalve@gmail.com) - [LinkedIn Profile URL](https://www.linkedin.com/in/vishalxpalve/)
+Vishal Palve - [Mail](mailto:vishalxpalve@gmail.com) - [LinkedIn Profile URL](https://www.linkedin.com/in/vishalxpalve/)
 
 Project Link: [https://github.com/Vishal-Palve/Telemedicine-Platform](https://github
