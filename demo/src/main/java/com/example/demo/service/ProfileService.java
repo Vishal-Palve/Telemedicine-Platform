@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class ProfileService {
 
@@ -97,6 +99,10 @@ public class ProfileService {
         dto.setAddress(profile.getAddress());
         dto.setInsuranceDetails(profile.getInsuranceDetails());
         return dto;
+    }
+
+    public List<PatientProfile> getallPatients() {
+        return patientProfileRepository.findAll();
     }
 }
 

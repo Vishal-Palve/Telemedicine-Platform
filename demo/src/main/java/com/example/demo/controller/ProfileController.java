@@ -12,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/profiles")
 public class ProfileController {
@@ -45,6 +47,11 @@ public class ProfileController {
     // @PreAuthorize("hasRole('DOCTOR') or #id == authentication.principal.id") // Temporarily removed
     public ResponseEntity<PatientProfileDto> getPatientProfile(@PathVariable Long id) {
         return ResponseEntity.ok(profileService.getPatientProfile(id));
+    }
+
+    @GetMapping("/patient")
+    public List<ResponseEntity<PatientProfileDto>> getPatientProfile() {
+        return (List<ResponseEntity<PatientProfileDto>>) ResponseEntity.ok(profileService.getallPatients());
     }
 
     private Long getCurrentUserId() {
