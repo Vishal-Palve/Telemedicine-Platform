@@ -20,7 +20,6 @@ public class PatientProfile {
     @MapsId
     @JoinColumn(name = "id")
     private User user;
-
     private LocalDate dateOfBirth;
     private String address;
     private String insuranceDetails;

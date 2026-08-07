@@ -2,12 +2,14 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.DoctorProfileDto;
 import com.example.demo.dto.PatientProfileDto;
+import com.example.demo.model.PatientProfile;
 import com.example.demo.security.services.UserDetailsImpl;
 import com.example.demo.service.ProfileService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 // import org.springframework.security.access.prepost.PreAuthorize; // Temporarily removed
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +24,7 @@ public class ProfileController {
     private ProfileService profileService;
 
     @PostMapping("/doctor")
-    // @PreAuthorize("hasRole('DOCTOR')") // Temporarily removed
+    @PreAuthorize("hasRole('DOCTOR')") // Temporarily removed
     public ResponseEntity<?> createOrUpdateDoctorProfile(@Valid @RequestBody DoctorProfileDto profileDto) {
         Long userId = getCurrentUserId();
         profileService.createOrUpdateDoctorProfile(userId, profileDto);
@@ -30,7 +32,7 @@ public class ProfileController {
     }
 
     @GetMapping("/doctor/{id}")
-    // @PreAuthorize("hasRole('PATIENT') or hasRole('DOCTOR')") // Temporarily removed
+    //@PreAuthorize("hasRole('PATIENT') or hasRole('DOCTOR')") // Temporarily removed
     public ResponseEntity<DoctorProfileDto> getDoctorProfile(@PathVariable Long id) {
         return ResponseEntity.ok(profileService.getDoctorProfile(id));
     }
@@ -48,10 +50,11 @@ public class ProfileController {
     public ResponseEntity<PatientProfileDto> getPatientProfile(@PathVariable Long id) {
         return ResponseEntity.ok(profileService.getPatientProfile(id));
     }
-
+    @PreAuthorize("permitAll()")
     @GetMapping("/patient")
-    public List<ResponseEntity<PatientProfileDto>> getPatientProfile() {
-        return (List<ResponseEntity<PatientProfileDto>>) ResponseEntity.ok(profileService.getallPatients());
+    public ResponseEntity<List<PatientProfile>> getAllPatients() {
+        List<PatientProfile> patients = profileService.getallPatients();
+        return ResponseEntity.ok(patients);
     }
 
     private Long getCurrentUserId() {
